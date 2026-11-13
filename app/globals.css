@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/*
+  Design system — devmyc portfolio
+  ---------------------------------
+  One dark theme, one accent. Every colour on the site comes from these
+  tokens, so changing the look later means editing this block only.
+
+  Tailwind v4 reads the @theme block and turns each token into utilities:
+  --color-ink-100  ->  text-ink-100, bg-ink-100, border-ink-100 ...
+  --color-accent   ->  text-accent, bg-accent ...
+*/
+@theme {
+  /* Surfaces: near-black with a faint cool tint, never pure #000 */
+  --color-canvas: #0b0c0e;      /* page background */
+  --color-surface: #111316;     /* cards, raised areas */
+  --color-surface-2: #171a1e;   /* hover state of cards */
+  --color-line: #23272d;        /* hairline borders and dividers */
+
+  /* Text: four steps from brightest to quietest */
+  --color-ink-100: #ecebe8;     /* headings */
+  --color-ink-200: #c4c3bf;     /* body text */
+  --color-ink-300: #8e8d89;     /* secondary text, labels */
+  --color-ink-400: #66655f;     /* hints, decorative only */
+
+  /* Accent: a muted sage green. Used sparingly: links, focus, small marks */
+  --color-accent: #8fc9a6;
+  --color-accent-dim: #8fc9a61f; /* ~12% tint for subtle backgrounds */
+
+  /* Layout */
+  --container-page: 72rem; /* max content width, 1152px */
+
+  /* Motion: one easing curve for the whole site */
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-rise: rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+/* Fonts are loaded by next/font in layout.js and exposed as CSS variables */
+@theme inline {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-canvas);
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink-200);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-canvas);
+  }
+
+  /* Visible, consistent keyboard focus everywhere (accessibility) */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Respect users who ask the OS for less motion */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
