@@ -23,7 +23,21 @@ export const metadata = {
     template: `%s — ${site.name}`,
   },
   description:
-    "Portfolio of Mohamed Hussein, an IT and Management graduate in Oslo working with data, databases and software development.",
+    "Portfolio of Mohamed Hussein, an IT and Management graduate in Oslo working across software, data and security.",
+  // "./" resolves per page, so every route gets its own canonical URL
+  alternates: { canonical: "./" },
+  openGraph: {
+    type: "website",
+    siteName: site.name,
+    locale: "en_GB",
+    url: "./",
+  },
+  twitter: { card: "summary_large_image" },
+};
+
+export const viewport = {
+  themeColor: "#0b0c0e",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }) {

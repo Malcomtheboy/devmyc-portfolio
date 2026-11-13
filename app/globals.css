@@ -21,7 +21,7 @@
   --color-ink-100: #ecebe8;     /* headings */
   --color-ink-200: #c4c3bf;     /* body text */
   --color-ink-300: #8e8d89;     /* secondary text, labels */
-  --color-ink-400: #66655f;     /* hints, decorative only */
+  --color-ink-400: #807f7a;     /* quiet labels, dates (4.9:1, passes WCAG AA) */
 
   /* Accent: a muted sage green. Used sparingly: links, focus, small marks */
   --color-accent: #8fc9a6;
