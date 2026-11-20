@@ -1,10 +1,12 @@
 import Link from "next/link";
 import Container from "./Container";
+import MobileMenu from "./MobileMenu";
+import ThemeToggle from "./ThemeToggle";
 import { nav, site } from "@/lib/content";
 
 /*
-  Top navigation. No JavaScript menu: on small screens the links simply
-  wrap into a compact row, which keeps it fast and accessible.
+  Top navigation: inline links from 768px up, a small menu on phones.
+  The theme switch is always visible.
 */
 export default function SiteHeader() {
   return (
@@ -17,22 +19,24 @@ export default function SiteHeader() {
       </a>
       <Container className="flex h-16 items-center justify-between gap-6">
         <Link href="/" aria-label={`${site.name}, home`} className="shrink-0 text-sm font-medium tracking-tight text-ink-100">
-          {/* Initials on phones so the menu fits; full name from 640px up */}
-          <span className="sm:hidden">MH</span>
-          <span className="hidden sm:inline">{site.name}</span>
+          {site.name}
           <span className="text-accent">.</span>
         </Link>
-        <nav aria-label="Main">
-          <ul className="flex items-center gap-4 text-sm text-ink-300 sm:gap-8">
-            {nav.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="transition-colors duration-200 hover:text-ink-100">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="flex items-center gap-3 md:gap-8">
+          <nav aria-label="Main" className="hidden md:block">
+            <ul className="flex items-center gap-7 text-sm text-ink-300">
+              {nav.map((item) => (
+                <li key={item.href}>
+                  <Link href={item.href} className="transition-colors duration-200 hover:text-ink-100">
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <ThemeToggle />
+          <MobileMenu items={nav} />
+        </div>
       </Container>
     </header>
   );

@@ -36,13 +36,30 @@ export const metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0b0c0e",
-  colorScheme: "dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0b0c0e" },
+    { media: "(prefers-color-scheme: light)", color: "#f6f5f2" },
+  ],
+  colorScheme: "dark light",
 };
+
+/*
+  Runs before the first paint so there is no flash of the wrong theme:
+  a saved choice wins, otherwise follow the visitor's system setting.
+*/
+const themeScript = `(function(){try{var t=localStorage.getItem("theme");if(!t)t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";document.documentElement.setAttribute("data-theme",t)}catch(e){}})()`;
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="flex min-h-dvh flex-col">
         <SiteHeader />
         <main id="main" className="flex-1">

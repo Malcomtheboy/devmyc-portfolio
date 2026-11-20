@@ -3,7 +3,7 @@ import Link from "next/link";
 import Container from "@/components/Container";
 import Section from "@/components/Section";
 import { Eyebrow, ProjectList, Tags, TextLink, Timeline } from "@/components/ui";
-import { site, about, projects, skills, education, experience } from "@/lib/content";
+import { site, about, projects, services, skills, education, experience } from "@/lib/content";
 
 const featured = projects.filter((p) => p.featured);
 
@@ -131,7 +131,21 @@ export default function Home() {
           </div>
         </Section>
 
-        <Section id="contact" index="05" label="Contact" title="Open to graduate roles and internships.">
+        <Section id="services" index="05" label="Services" title="I also build for clients.">
+          <ul className="grid gap-4 sm:grid-cols-3">
+            {services.map((s) => (
+              <li key={s.slug} className="rounded-2xl border border-line p-6">
+                <p className="text-ink-100">{s.name}</p>
+                <p className="mt-1 font-mono text-xs uppercase tracking-[0.14em] text-ink-400">From {s.price}</p>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-8">
+            <TextLink href="/services">See services and what&apos;s included</TextLink>
+          </div>
+        </Section>
+
+        <Section id="contact" index="06" label="Contact" title="Open to graduate roles and internships.">
           <ul className="flex flex-col gap-4 text-lg sm:flex-row sm:gap-10">
             {[
               { href: `mailto:${site.email}`, label: site.email },

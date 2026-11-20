@@ -10,9 +10,9 @@ import Container from "./Container";
 export const isTodo = (value) => !value || String(value).startsWith("TODO");
 
 // Small uppercase mono label, e.g. "EDUCATION"
-export function Eyebrow({ children, as: Tag = "p", className = "" }) {
+export function Eyebrow({ children, as: Tag = "p", className = "", ...rest }) {
   return (
-    <Tag className={`font-mono text-xs uppercase tracking-[0.18em] text-ink-300 ${className}`}>
+    <Tag {...rest} className={`font-mono text-xs uppercase tracking-[0.18em] text-ink-300 ${className}`}>
       {children}
     </Tag>
   );

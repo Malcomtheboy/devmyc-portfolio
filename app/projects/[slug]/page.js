@@ -19,6 +19,19 @@ export async function generateMetadata({ params }) {
   return { title: project.name, description: project.summary };
 }
 
+function List({ items }) {
+  return (
+    <ul className="space-y-4">
+      {items.map((item) => (
+        <li key={item} className="flex gap-4">
+          <span aria-hidden="true" className="mt-3 h-px w-4 shrink-0 bg-accent" />
+          <span>{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Block({ title, children }) {
   return (
     <div className="grid gap-4 border-t border-line py-10 md:grid-cols-[12rem_1fr] md:gap-16">
@@ -48,8 +61,10 @@ async function ProjectContent({ params }) {
 
   const p = projects[index];
   const next = projects[(index + 1) % projects.length];
+  const isConcept = p.status?.startsWith("Concept");
   const meta = [
     { label: "Role", value: p.role },
+    { label: "Team", value: p.team },
     { label: "Year", value: p.year },
     { label: "Status", value: p.status },
   ].filter((m) => !isTodo(m.value));
@@ -64,7 +79,7 @@ async function ProjectContent({ params }) {
         <p className="animate-rise mt-6 max-w-2xl text-xl leading-relaxed text-pretty text-ink-200 [animation-delay:80ms]">
           {p.summary}
         </p>
-        <dl className="animate-rise mt-12 grid gap-6 sm:grid-cols-3 [animation-delay:160ms]">
+        <dl className="animate-rise mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4 [animation-delay:160ms]">
           {meta.map((m) => (
             <div key={m.label}>
               <dt className="font-mono text-xs uppercase tracking-[0.18em] text-ink-400">{m.label}</dt>
@@ -75,26 +90,34 @@ async function ProjectContent({ params }) {
       </Container>
 
       <Container className="pb-8">
+        {p.overview && (
+          <Block title="Overview">
+            <p>{p.overview}</p>
+          </Block>
+        )}
         {p.problem && (
           <Block title="Problem">
             <p>{p.problem}</p>
           </Block>
         )}
         {p.solution && (
-          <Block title={p.status?.startsWith("Concept") ? "The idea" : "Solution"}>
+          <Block title={isConcept ? "The idea" : "Solution"}>
             <p>{p.solution}</p>
           </Block>
         )}
+        {p.features?.length > 0 && (
+          <Block title="What it does">
+            <List items={p.features} />
+          </Block>
+        )}
         {p.points?.length > 0 && (
-          <Block title={p.status?.startsWith("Concept") ? "Planned features" : "What I did"}>
-            <ul className="space-y-4">
-              {p.points.map((point) => (
-                <li key={point} className="flex gap-4">
-                  <span aria-hidden="true" className="mt-3 h-px w-4 shrink-0 bg-accent" />
-                  <span>{point}</span>
-                </li>
-              ))}
-            </ul>
+          <Block title={isConcept ? "Planned features" : "My part"}>
+            <List items={p.points} />
+          </Block>
+        )}
+        {p.security?.length > 0 && (
+          <Block title="Security">
+            <List items={p.security} />
           </Block>
         )}
         {p.principle && (
@@ -113,6 +136,19 @@ async function ProjectContent({ params }) {
               {p.images.map((img) => (
                 <li key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
                   <Image src={img.src} alt={img.alt} width={335} height={723} sizes="(min-width: 640px) 14rem, 45vw" className="h-auto w-full" />
+                </li>
+              ))}
+            </ul>
+          </Block>
+        )}
+        {p.links?.length > 0 && (
+          <Block title="Links">
+            <ul className="flex flex-col gap-3">
+              {p.links.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="text-ink-100 underline decoration-line underline-offset-8 transition-colors hover:decoration-accent">
+                    {l.label} <span aria-hidden="true">↗</span>
+                  </a>
                 </li>
               ))}
             </ul>

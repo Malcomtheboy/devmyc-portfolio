@@ -2,7 +2,7 @@ import { site, projects } from "@/lib/content";
 
 // Served at /sitemap.xml so search engines can find every page
 export default function sitemap() {
-  const pages = ["", "/projects", "/about", "/experience", "/contact"];
+  const pages = ["", "/projects", "/about", "/experience", "/services", "/contact"];
   return [
     ...pages.map((path) => ({
       url: `${site.url}${path}`,
