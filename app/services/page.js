@@ -1,16 +1,14 @@
 import Link from "next/link";
 import Container from "@/components/Container";
 import { Eyebrow, PageHeader } from "@/components/ui";
-import { process, services, site } from "@/lib/content";
+import EnquiryButton from "@/components/EnquiryButton";
+import { process, services } from "@/lib/content";
 
 export const metadata = {
   title: "Services",
   description:
     "Websites from NOK 3,000, system architecture from NOK 8,000 and full apps from NOK 15,000. Built by Mohamed Hussein in Oslo.",
 };
-
-const mailto = (subject) =>
-  `mailto:${site.email}?subject=${encodeURIComponent(subject)}`;
 
 export default function ServicesPage() {
   return (
@@ -54,16 +52,16 @@ export default function ServicesPage() {
                 ))}
               </ul>
               <p className="mt-6 text-sm text-ink-400">Good for: {s.fit}</p>
-              <a
-                href={mailto(`${s.name} enquiry`)}
-                className={`mt-8 inline-flex h-11 items-center justify-center rounded-full px-5 text-sm font-medium transition-colors duration-200 ${
+              <EnquiryButton
+                subject={`${s.name} enquiry`}
+                className={`mt-8 inline-flex h-11 cursor-pointer items-center justify-center rounded-full px-5 text-sm font-medium transition-colors duration-200 ${
                   s.highlight
                     ? "bg-ink-100 text-canvas hover:bg-accent"
                     : "border border-line text-ink-100 hover:border-ink-300"
                 }`}
               >
                 Ask about {s.name.toLowerCase()}
-              </a>
+              </EnquiryButton>
             </li>
           ))}
         </ul>
@@ -88,12 +86,12 @@ export default function ServicesPage() {
             Not sure which one fits? Tell me what you have in mind.
           </h2>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href={mailto("Project enquiry")}
-              className="inline-flex h-11 items-center rounded-full bg-ink-100 px-5 text-sm font-medium text-canvas transition-colors duration-200 hover:bg-accent"
+            <EnquiryButton
+              subject="Project enquiry"
+              className="inline-flex h-11 cursor-pointer items-center rounded-full bg-ink-100 px-5 text-sm font-medium text-canvas transition-colors duration-200 hover:bg-accent"
             >
-              Email {site.email}
-            </a>
+              Get in touch
+            </EnquiryButton>
             <Link
               href="/projects"
               className="inline-flex h-11 items-center rounded-full border border-line px-5 text-sm font-medium text-ink-100 transition-colors duration-200 hover:border-ink-300"

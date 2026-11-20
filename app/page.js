@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Container from "@/components/Container";
 import Section from "@/components/Section";
+import EnquiryButton from "@/components/EnquiryButton";
 import { Eyebrow, ProjectList, Tags, TextLink, Timeline } from "@/components/ui";
 import { site, about, projects, services, skills, education, experience } from "@/lib/content";
 
@@ -147,8 +148,15 @@ export default function Home() {
 
         <Section id="contact" index="06" label="Contact" title="Open to graduate roles and internships.">
           <ul className="flex flex-col gap-4 text-lg sm:flex-row sm:gap-10">
+            <li>
+              <EnquiryButton
+                subject="Hello from devmyc.no"
+                className="cursor-pointer text-ink-100 underline decoration-line underline-offset-8 transition-colors hover:decoration-accent"
+              >
+                {site.email}
+              </EnquiryButton>
+            </li>
             {[
-              { href: `mailto:${site.email}`, label: site.email },
               { href: site.links.linkedin, label: "LinkedIn" },
               { href: site.links.github, label: "GitHub" },
             ].map((l) => (
