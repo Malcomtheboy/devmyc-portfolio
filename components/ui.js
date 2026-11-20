@@ -84,13 +84,14 @@ export function Timeline({ items, compact = false }) {
   );
 }
 
-export function ProjectList({ items }) {
+// `base` is "" for English and "/no" for Norwegian
+export function ProjectList({ items, base = "" }) {
   return (
     <ul className="divide-y divide-line border-y border-line">
       {items.map((p) => (
         <li key={p.slug}>
           <Link
-            href={`/projects/${p.slug}`}
+            href={`${base}/projects/${p.slug}`}
             className="group grid gap-3 py-7 sm:grid-cols-[11rem_1fr_auto] sm:items-baseline sm:gap-8"
           >
             <span className="text-lg font-medium text-ink-100 transition-colors group-hover:text-accent">

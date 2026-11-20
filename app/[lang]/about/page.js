@@ -1,25 +1,28 @@
 import Image from "next/image";
 import Container from "@/components/Container";
 import { Eyebrow, PageHeader, Tags, TextLink } from "@/components/ui";
-import { site, about, strengths, languages } from "@/lib/content";
+import { getI18n, pageMeta } from "@/lib/i18n";
 
-export const metadata = {
-  title: "About",
-  description: "About Mohamed Hussein: IT and Management graduate from USN, working across software, data and security.",
-};
+export async function generateMetadata() {
+  const { lang, c } = await getI18n();
+  const t = c.pages.about;
+  return pageMeta(lang, "/about", t.metaTitle, t.metaDescription);
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { c, href } = await getI18n();
+  const t = c.pages.about;
   return (
     <>
-      <PageHeader label="About" title="Curious about technology and business." />
+      <PageHeader label={t.label} title={t.title} />
       <Container className="pb-24 sm:pb-32">
         <div className="grid gap-12 border-t border-line pt-12 lg:grid-cols-[20rem_1fr] lg:gap-20">
           <figure className="w-56 overflow-hidden rounded-2xl border border-line bg-surface sm:w-64 lg:w-full">
             <Image
-              src={site.photo.src}
-              alt={site.photo.alt}
-              width={site.photo.width}
-              height={site.photo.height}
+              src={c.site.photo.src}
+              alt={c.site.photo.alt}
+              width={c.site.photo.width}
+              height={c.site.photo.height}
               priority
               sizes="(min-width: 1024px) 20rem, 16rem"
               className="h-auto w-full"
@@ -28,29 +31,29 @@ export default function AboutPage() {
 
           <div className="max-w-2xl">
             <div className="space-y-6 text-lg leading-relaxed text-pretty text-ink-300">
-              {about.map((para) => (
+              {c.about.map((para) => (
                 <p key={para}>{para}</p>
               ))}
             </div>
 
             <div className="mt-14 grid gap-10 sm:grid-cols-2">
               <div>
-                <Eyebrow as="h2" className="mb-4">How I work</Eyebrow>
+                <Eyebrow as="h2" className="mb-4">{t.howIWork}</Eyebrow>
                 <ul className="space-y-2 text-ink-200">
-                  {strengths.map((s) => (
+                  {c.strengths.map((s) => (
                     <li key={s}>{s}</li>
                   ))}
                 </ul>
               </div>
               <div>
-                <Eyebrow as="h2" className="mb-4">Languages</Eyebrow>
-                <Tags items={languages} />
+                <Eyebrow as="h2" className="mb-4">{t.languages}</Eyebrow>
+                <Tags items={c.languages} />
               </div>
             </div>
 
             <div className="mt-14 flex flex-wrap gap-x-8 gap-y-3">
-              <TextLink href="/projects">See my projects</TextLink>
-              <TextLink href="/contact">Get in touch</TextLink>
+              <TextLink href={href("/projects")}>{t.seeProjects}</TextLink>
+              <TextLink href={href("/contact")}>{t.getInTouch}</TextLink>
             </div>
           </div>
         </div>

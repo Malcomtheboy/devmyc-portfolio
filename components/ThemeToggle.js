@@ -6,7 +6,7 @@
   button needs no React state: both icons are rendered and CSS shows
   the right one. The choice is remembered in localStorage.
 */
-export default function ThemeToggle() {
+export default function ThemeToggle({ label = "Switch between light and dark theme", title = "Switch theme" }) {
   function toggle() {
     const root = document.documentElement;
     const next = root.dataset.theme === "light" ? "dark" : "light";
@@ -22,8 +22,8 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label="Switch between light and dark theme"
-      title="Switch theme"
+      aria-label={label}
+      title={title}
       className="grid size-9 shrink-0 place-items-center rounded-full border border-line text-ink-300 transition-colors duration-200 hover:border-ink-300 hover:text-ink-100"
     >
       {/* Sun: shown in dark mode (click for day) */}

@@ -1,18 +1,26 @@
-import { site, projects } from "@/lib/content";
+import { getContent, localePath } from "@/lib/content";
 
-// Served at /sitemap.xml so search engines can find every page
+// Served at /sitemap.xml: every page in English and Norwegian,
+// each entry linking to its other-language version.
 export default function sitemap() {
-  const pages = ["", "/projects", "/about", "/experience", "/services", "/contact"];
-  return [
-    ...pages.map((path) => ({
-      url: `${site.url}${path}`,
-      changeFrequency: "monthly",
-      priority: path === "" ? 1 : 0.8,
-    })),
-    ...projects.map((p) => ({
-      url: `${site.url}/projects/${p.slug}`,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    })),
+  const c = getContent("en");
+  const paths = [
+    "/",
+    "/projects",
+    "/about",
+    "/experience",
+    "/services",
+    "/contact",
+    ...c.projects.map((p) => `/projects/${p.slug}`),
   ];
+  const abs = (lang, path) => `${c.site.url}${localePath(lang, path) === "/" ? "" : localePath(lang, path)}`;
+
+  return paths.flatMap((path) =>
+    ["en", "no"].map((lang) => ({
+      url: abs(lang, path),
+      changeFrequency: "monthly",
+      priority: path === "/" ? 1 : path.startsWith("/projects/") ? 0.6 : 0.8,
+      alternates: { languages: { en: abs("en", path), nb: abs("no", path) } },
+    }))
+  );
 }

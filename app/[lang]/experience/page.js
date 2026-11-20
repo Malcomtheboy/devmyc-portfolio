@@ -1,11 +1,12 @@
 import Container from "@/components/Container";
 import { Eyebrow, PageHeader, ProjectList, Tags, Timeline } from "@/components/ui";
-import { education, experience, projects, skills } from "@/lib/content";
+import { getI18n, pageMeta } from "@/lib/i18n";
 
-export const metadata = {
-  title: "Experience",
-  description: "Education, work experience and technical experience of Mohamed Hussein.",
-};
+export async function generateMetadata() {
+  const { lang, c } = await getI18n();
+  const t = c.pages.experience;
+  return pageMeta(lang, "/experience", t.metaTitle, t.metaDescription);
+}
 
 function Group({ title, children }) {
   return (
@@ -16,25 +17,24 @@ function Group({ title, children }) {
   );
 }
 
-export default function ExperiencePage() {
+export default async function ExperiencePage() {
+  const { lang, c } = await getI18n();
+  const t = c.pages.experience;
   return (
     <>
-      <PageHeader
-        label="Experience"
-        title="Education, work and what I've built along the way."
-      />
+      <PageHeader label={t.label} title={t.title} />
       <Container className="pb-24 sm:pb-32">
-        <Group title="Education">
-          <Timeline items={education} />
+        <Group title={t.education}>
+          <Timeline items={c.education} />
         </Group>
 
-        <Group title="Work">
-          <Timeline items={experience} />
+        <Group title={t.work}>
+          <Timeline items={c.experience} />
         </Group>
 
-        <Group title="Technical">
+        <Group title={t.technical}>
           <div className="space-y-8">
-            {skills.map((s) => (
+            {c.skills.map((s) => (
               <div key={s.group}>
                 <h3 className="mb-3 text-ink-100">{s.group}</h3>
                 <Tags items={s.items} />
@@ -43,8 +43,8 @@ export default function ExperiencePage() {
           </div>
         </Group>
 
-        <Group title="Projects">
-          <ProjectList items={projects} />
+        <Group title={t.projects}>
+          <ProjectList items={c.projects} base={lang === "no" ? "/no" : ""} />
         </Group>
       </Container>
     </>

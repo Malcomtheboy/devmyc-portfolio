@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { site } from "@/lib/content";
 
 /*
   Contact form that posts to /api/contact, which forwards the message
   to Mohamed's inbox. If sending isn't set up yet or fails, the visitor
   is shown the email address instead, so a message is never lost silently.
+  `t` is the translated form text (content.ui.form) from the server.
 */
-export default function ContactForm({ topic = "General enquiry", compact = false }) {
+export default function ContactForm({ topic = "General enquiry", email, t, compact = false }) {
   const id = useId();
   const startedAt = useRef(0);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error | unavailable
@@ -31,7 +31,6 @@ export default function ContactForm({ topic = "General enquiry", compact = false
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...values, topic, startedAt: startedAt.current }),
       });
-      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setStatus("sent");
         form.reset();
@@ -39,7 +38,7 @@ export default function ContactForm({ topic = "General enquiry", compact = false
         setStatus("unavailable");
       } else {
         setStatus("error");
-        setError(data.error || "Something went wrong. Please try again.");
+        setError(res.status === 400 ? t.invalid : res.status === 429 ? t.tooMany : t.genericError);
       }
     } catch {
       setStatus("unavailable");
@@ -49,8 +48,8 @@ export default function ContactForm({ topic = "General enquiry", compact = false
   if (status === "sent") {
     return (
       <div role="status" className="rounded-2xl border border-accent/40 bg-accent-dim p-6">
-        <p className="font-medium text-ink-100">Thanks, your message is on its way.</p>
-        <p className="mt-2 text-sm text-ink-300">I&apos;ll reply to the email address you gave.</p>
+        <p className="font-medium text-ink-100">{t.sentTitle}</p>
+        <p className="mt-2 text-sm text-ink-300">{t.sentText}</p>
       </div>
     );
   }
@@ -60,19 +59,19 @@ export default function ContactForm({ topic = "General enquiry", compact = false
   const label = "text-sm text-ink-200";
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4" noValidate={false}>
+    <form onSubmit={onSubmit} className="space-y-4">
       <div className={compact ? "space-y-4" : "grid gap-4 sm:grid-cols-2"}>
         <div>
-          <label htmlFor={`${id}-name`} className={label}>Name</label>
+          <label htmlFor={`${id}-name`} className={label}>{t.name}</label>
           <input id={`${id}-name`} name="name" required maxLength={100} autoComplete="name" className={field} />
         </div>
         <div>
-          <label htmlFor={`${id}-email`} className={label}>Email</label>
+          <label htmlFor={`${id}-email`} className={label}>{t.email}</label>
           <input id={`${id}-email`} name="email" type="email" required maxLength={200} autoComplete="email" className={field} />
         </div>
       </div>
       <div>
-        <label htmlFor={`${id}-message`} className={label}>Message</label>
+        <label htmlFor={`${id}-message`} className={label}>{t.message}</label>
         <textarea
           id={`${id}-message`}
           name="message"
@@ -80,7 +79,7 @@ export default function ContactForm({ topic = "General enquiry", compact = false
           minLength={10}
           maxLength={5000}
           rows={compact ? 4 : 6}
-          placeholder="What do you need, and roughly when?"
+          placeholder={t.placeholder}
           className={`${field} resize-y`}
         />
       </div>
@@ -96,21 +95,18 @@ export default function ContactForm({ topic = "General enquiry", compact = false
       )}
       {status === "unavailable" && (
         <p role="alert" className="rounded-xl bg-surface-2 p-4 text-sm leading-relaxed text-ink-200">
-          The form couldn&apos;t send right now. Please email me directly at{" "}
-          <span className="font-mono text-ink-100">{site.email}</span>.
+          {t.unavailable} <span className="font-mono text-ink-100">{email}</span>.
         </p>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
-        <p className="max-w-xs text-xs leading-relaxed text-ink-400">
-          Your message goes straight to my inbox. Nothing is stored on this site.
-        </p>
+        <p className="max-w-xs text-xs leading-relaxed text-ink-400">{t.privacy}</p>
         <button
           type="submit"
           disabled={status === "sending"}
           className="inline-flex h-11 cursor-pointer items-center rounded-full bg-ink-100 px-6 text-sm font-medium text-canvas transition-colors duration-200 hover:bg-accent disabled:cursor-wait disabled:opacity-60"
         >
-          {status === "sending" ? "Sending…" : "Send message"}
+          {status === "sending" ? t.sending : t.send}
         </button>
       </div>
     </form>

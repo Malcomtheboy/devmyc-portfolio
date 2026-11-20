@@ -1,42 +1,42 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { site } from "@/lib/content";
 import ContactForm from "./ContactForm";
 
 /*
   "Ask about ..." button. Opens a dialog with the contact form (topic
   pre-filled), plus Gmail / Outlook / mail-app links and a copy button
   for people who prefer their own email.
+  `ui` is the translated interface text (content.ui) from the server.
 */
-export default function EnquiryButton({ subject, children, className = "" }) {
+export default function EnquiryButton({ subject, email, ui, children, className = "" }) {
   const dialogRef = useRef(null);
   const titleId = useId(); // several buttons can share a page
   const [copied, setCopied] = useState(false);
+  const t = ui.dialog;
 
-  const to = site.email;
-  const body = "Hi Mohamed,\n\n";
+  const body = `${t.greeting}\n\n`;
   const enc = encodeURIComponent;
   const options = [
     {
       label: "Gmail",
-      href: `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(to)}&su=${enc(subject)}&body=${enc(body)}`,
+      href: `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(email)}&su=${enc(subject)}&body=${enc(body)}`,
       external: true,
     },
     {
       label: "Outlook",
-      href: `https://outlook.live.com/mail/0/deeplink/compose?to=${enc(to)}&subject=${enc(subject)}&body=${enc(body)}`,
+      href: `https://outlook.live.com/mail/0/deeplink/compose?to=${enc(email)}&subject=${enc(subject)}&body=${enc(body)}`,
       external: true,
     },
     {
-      label: "Email app",
-      href: `mailto:${to}?subject=${enc(subject)}&body=${enc(body)}`,
+      label: t.emailApp,
+      href: `mailto:${email}?subject=${enc(subject)}&body=${enc(body)}`,
     },
   ];
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(to);
+      await navigator.clipboard.writeText(email);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -59,7 +59,7 @@ export default function EnquiryButton({ subject, children, className = "" }) {
         <div className="p-7">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="font-mono text-xs uppercase tracking-[0.18em] text-ink-400">Get in touch</p>
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-ink-400">{t.eyebrow}</p>
               <h2 id={titleId} className="mt-2 text-xl font-medium tracking-tight text-ink-100">
                 {subject}
               </h2>
@@ -67,7 +67,7 @@ export default function EnquiryButton({ subject, children, className = "" }) {
             <button
               type="button"
               onClick={() => dialogRef.current?.close()}
-              aria-label="Close"
+              aria-label={t.close}
               className="grid size-8 shrink-0 place-items-center rounded-full text-ink-300 transition-colors hover:bg-surface-2 hover:text-ink-100"
             >
               <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
@@ -76,15 +76,13 @@ export default function EnquiryButton({ subject, children, className = "" }) {
             </button>
           </div>
 
-          <p className="mt-4 text-sm leading-relaxed text-ink-300">
-            Tell me a little about what you need, and I&apos;ll get back to you.
-          </p>
+          <p className="mt-4 text-sm leading-relaxed text-ink-300">{t.intro}</p>
 
           <div className="mt-6">
-            <ContactForm topic={subject} compact />
+            <ContactForm topic={subject} email={email} t={ui.form} compact />
           </div>
 
-          <p className="mt-8 border-t border-line pt-6 text-sm text-ink-300">Or use your own email:</p>
+          <p className="mt-8 border-t border-line pt-6 text-sm text-ink-300">{t.own}</p>
           <ul className="mt-3 flex flex-wrap gap-2">
             {options.map((o) => (
               <li key={o.label}>
@@ -101,13 +99,13 @@ export default function EnquiryButton({ subject, children, className = "" }) {
           </ul>
 
           <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-surface-2 px-4 py-3">
-            <span className="truncate font-mono text-sm text-ink-200">{to}</span>
+            <span className="truncate font-mono text-sm text-ink-200">{email}</span>
             <button
               type="button"
               onClick={copy}
               className="shrink-0 rounded-full px-3 py-1 text-sm text-accent transition-colors hover:bg-accent-dim"
             >
-              <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
+              <span aria-live="polite">{copied ? t.copied : t.copy}</span>
             </button>
           </div>
         </div>

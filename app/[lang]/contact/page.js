@@ -2,12 +2,13 @@ import Container from "@/components/Container";
 import ContactForm from "@/components/ContactForm";
 import EnquiryButton from "@/components/EnquiryButton";
 import { PageHeader } from "@/components/ui";
-import { site } from "@/lib/content";
+import { getI18n, pageMeta } from "@/lib/i18n";
 
-export const metadata = {
-  title: "Contact",
-  description: "Get in touch with Mohamed Hussein by email, LinkedIn or GitHub.",
-};
+export async function generateMetadata() {
+  const { lang, c } = await getI18n();
+  const t = c.pages.contact;
+  return pageMeta(lang, "/contact", t.metaTitle, t.metaDescription);
+}
 
 /*
   Contact form at the top (sent via /api/contact), then direct channels.
@@ -29,38 +30,36 @@ function RowContent({ label, value }) {
   );
 }
 
-const links = [
-  { label: "LinkedIn", value: "mohamed-hussein", href: site.links.linkedin },
-  { label: "GitHub", value: "Malcomtheboy", href: site.links.github },
-];
+export default async function ContactPage() {
+  const { c } = await getI18n();
+  const t = c.pages.contact;
+  const links = [
+    { label: "LinkedIn", value: "mohamed-hussein", href: c.site.links.linkedin },
+    { label: "GitHub", value: "Malcomtheboy", href: c.site.links.github },
+  ];
 
-export default function ContactPage() {
   return (
     <>
-      <PageHeader
-        label="Contact"
-        title="Open to graduate roles and internships."
-        intro="Based in Oslo and open to opportunities in Norway and abroad, including London. Email is the quickest way to reach me."
-      />
+      <PageHeader label={t.label} title={t.title} intro={t.intro} />
       <Container className="pb-16">
         <section aria-labelledby="form-title" className="grid gap-8 border-t border-line pt-12 md:grid-cols-[12rem_1fr] md:gap-16">
-          <h2 id="form-title" className="font-mono text-xs uppercase tracking-[0.18em] text-ink-300">Send a message</h2>
+          <h2 id="form-title" className="font-mono text-xs uppercase tracking-[0.18em] text-ink-300">{t.formTitle}</h2>
           <div className="max-w-2xl">
-            <ContactForm />
+            <ContactForm topic={c.home.hello} email={c.site.email} t={c.ui.form} />
           </div>
         </section>
       </Container>
       <Container className="pb-24 sm:pb-32">
         <ul className="divide-y divide-line border-y border-line">
           <li>
-            <EnquiryButton subject="Hello from devmyc.no" className={rowClass}>
-              <RowContent label="Email" value={site.email} />
+            <EnquiryButton subject={c.home.hello} email={c.site.email} ui={c.ui} className={rowClass}>
+              <RowContent label={t.email} value={c.site.email} />
             </EnquiryButton>
           </li>
-          {links.map((c) => (
-            <li key={c.label}>
-              <a href={c.href} className={rowClass}>
-                <RowContent label={c.label} value={c.value} />
+          {links.map((l) => (
+            <li key={l.label}>
+              <a href={l.href} className={rowClass}>
+                <RowContent label={l.label} value={l.value} />
               </a>
             </li>
           ))}

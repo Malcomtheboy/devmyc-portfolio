@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
   Phone menu built on <details>/<summary>: works with keyboard and
   screen readers out of the box. It closes itself after navigating.
 */
-export default function MobileMenu({ items }) {
+export default function MobileMenu({ items, label = "Menu" }) {
   const ref = useRef(null);
   const pathname = usePathname();
 
@@ -19,7 +19,7 @@ export default function MobileMenu({ items }) {
   return (
     <details ref={ref} className="group relative md:hidden">
       <summary
-        aria-label="Menu"
+        aria-label={label}
         className="grid size-9 cursor-pointer list-none place-items-center rounded-full border border-line text-ink-300 transition-colors hover:text-ink-100 [&::-webkit-details-marker]:hidden"
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="size-4 group-open:hidden" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">

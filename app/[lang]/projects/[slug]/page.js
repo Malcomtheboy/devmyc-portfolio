@@ -4,19 +4,21 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Container from "@/components/Container";
 import { Eyebrow, Tags, TextLink, isTodo } from "@/components/ui";
-import { projects } from "@/lib/content";
+import { getContent } from "@/lib/content";
+import { getI18n, pageMeta } from "@/lib/i18n";
 
-// Prerender one static page per project at build time.
+// Prerender one static page per project (slugs are the same in both languages).
 // Unknown slugs hit notFound() below and get the 404 page.
 export function generateStaticParams() {
-  return projects.map((p) => ({ slug: p.slug }));
+  return getContent("en").projects.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const project = projects.find((p) => p.slug === slug);
+  const { lang, c } = await getI18n();
+  const project = c.projects.find((p) => p.slug === slug);
   if (!project) return {};
-  return { title: project.name, description: project.summary };
+  return pageMeta(lang, `/projects/${slug}`, project.name, project.summary);
 }
 
 function List({ items }) {
@@ -41,6 +43,30 @@ function Block({ title, children }) {
   );
 }
 
+// Phone screenshots sit three in a row; desktop screenshots get full width
+function Screens({ images }) {
+  const phone = images.filter((i) => i.height > i.width);
+  const desktop = images.filter((i) => i.height <= i.width);
+  return (
+    <div className="space-y-4">
+      {desktop.map((img) => (
+        <div key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
+          <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 768px) 42rem, 100vw" className="h-auto w-full" />
+        </div>
+      ))}
+      {phone.length > 0 && (
+        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {phone.map((img) => (
+            <li key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
+              <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 640px) 14rem, 45vw" className="h-auto w-full" />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 /*
   Reading `params` inside <Suspense> lets Next.js show the page shell
   instantly on navigation. All known slugs are still prerendered as static
@@ -56,23 +82,24 @@ export default function ProjectPage({ params }) {
 
 async function ProjectContent({ params }) {
   const { slug } = await params;
-  const index = projects.findIndex((p) => p.slug === slug);
+  const { c, href } = await getI18n();
+  const index = c.projects.findIndex((p) => p.slug === slug);
   if (index === -1) notFound();
 
-  const p = projects[index];
-  const next = projects[(index + 1) % projects.length];
-  const isConcept = p.status?.startsWith("Concept");
+  const p = c.projects[index];
+  const next = c.projects[(index + 1) % c.projects.length];
+  const t = c.ui.labels;
   const meta = [
-    { label: "Role", value: p.role },
-    { label: "Team", value: p.team },
-    { label: "Year", value: p.year },
-    { label: "Status", value: p.status },
+    { label: t.role, value: p.role },
+    { label: t.team, value: p.team },
+    { label: t.year, value: p.year },
+    { label: t.status, value: p.status },
   ].filter((m) => !isTodo(m.value));
 
   return (
     <article>
       <Container className="pt-16 pb-12 sm:pt-24">
-        <TextLink href="/projects" back>All projects</TextLink>
+        <TextLink href={href("/projects")} back>{c.ui.allProjects}</TextLink>
         <h1 className="animate-rise mt-10 text-5xl font-medium tracking-[-0.03em] text-ink-100 sm:text-7xl">
           {p.name}
         </h1>
@@ -90,59 +117,21 @@ async function ProjectContent({ params }) {
       </Container>
 
       <Container className="pb-8">
-        {p.overview && (
-          <Block title="Overview">
-            <p>{p.overview}</p>
-          </Block>
-        )}
-        {p.problem && (
-          <Block title="Problem">
-            <p>{p.problem}</p>
-          </Block>
-        )}
-        {p.solution && (
-          <Block title={isConcept ? "The idea" : "Solution"}>
-            <p>{p.solution}</p>
-          </Block>
-        )}
-        {p.features?.length > 0 && (
-          <Block title="What it does">
-            <List items={p.features} />
-          </Block>
-        )}
-        {p.points?.length > 0 && (
-          <Block title={isConcept ? "Planned features" : "My part"}>
-            <List items={p.points} />
-          </Block>
-        )}
-        {p.security?.length > 0 && (
-          <Block title="Security">
-            <List items={p.security} />
-          </Block>
-        )}
+        {p.overview && <Block title={t.overview}><p>{p.overview}</p></Block>}
+        {p.problem && <Block title={t.problem}><p>{p.problem}</p></Block>}
+        {p.solution && <Block title={p.concept ? t.idea : t.solution}><p>{p.solution}</p></Block>}
+        {p.images?.length > 0 && <Block title={t.screens}><Screens images={p.images} /></Block>}
+        {p.features?.length > 0 && <Block title={t.features}><List items={p.features} /></Block>}
+        {p.points?.length > 0 && <Block title={p.concept ? t.planned : t.myPart}><List items={p.points} /></Block>}
+        {p.security?.length > 0 && <Block title={t.security}><List items={p.security} /></Block>}
         {p.principle && (
-          <Block title="Principle">
+          <Block title={t.principle}>
             <p className="text-2xl font-medium tracking-tight text-ink-100">{p.principle}</p>
           </Block>
         )}
-        {p.stack?.length > 0 && (
-          <Block title="Stack">
-            <Tags items={p.stack} />
-          </Block>
-        )}
-        {p.images?.length > 0 && (
-          <Block title="Screens">
-            <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-              {p.images.map((img) => (
-                <li key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
-                  <Image src={img.src} alt={img.alt} width={335} height={723} sizes="(min-width: 640px) 14rem, 45vw" className="h-auto w-full" />
-                </li>
-              ))}
-            </ul>
-          </Block>
-        )}
+        {p.stack?.length > 0 && <Block title={t.stack}><Tags items={p.stack} /></Block>}
         {p.links?.length > 0 && (
-          <Block title="Links">
+          <Block title={t.links}>
             <ul className="flex flex-col gap-3">
               {p.links.map((l) => (
                 <li key={l.href}>
@@ -158,10 +147,10 @@ async function ProjectContent({ params }) {
 
       <Container className="pb-24 sm:pb-32">
         <Link
-          href={`/projects/${next.slug}`}
+          href={href(`/projects/${next.slug}`)}
           className="group flex items-baseline justify-between gap-6 border-y border-line py-10"
         >
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-ink-400">Next project</span>
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-ink-400">{c.ui.nextProject}</span>
           <span className="text-2xl font-medium tracking-tight text-ink-100 transition-colors group-hover:text-accent sm:text-3xl">
             {next.name} <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-1">→</span>
           </span>
