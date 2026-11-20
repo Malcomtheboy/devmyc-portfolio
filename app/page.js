@@ -109,14 +109,14 @@ export default function Home() {
               </div>
             </div>
             <figure className="order-first w-48 overflow-hidden rounded-2xl border border-line bg-surface sm:w-56 lg:order-none lg:w-full">
-              {/* Square source cropped to a 3:4 portrait, centred on the face */}
+              {/* Full photo, no cropping */}
               <Image
                 src={site.photo.src}
                 alt={site.photo.alt}
-                width={800}
-                height={800}
+                width={site.photo.width}
+                height={site.photo.height}
                 sizes="(min-width: 1024px) 16rem, 14rem"
-                className="aspect-[3/4] w-full object-cover object-center"
+                className="h-auto w-full"
               />
             </figure>
           </div>

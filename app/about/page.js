@@ -18,11 +18,11 @@ export default function AboutPage() {
             <Image
               src={site.photo.src}
               alt={site.photo.alt}
-              width={800}
-              height={800}
+              width={site.photo.width}
+              height={site.photo.height}
               priority
               sizes="(min-width: 1024px) 20rem, 16rem"
-              className="aspect-[4/5] w-full object-cover object-center"
+              className="h-auto w-full"
             />
           </figure>
 
