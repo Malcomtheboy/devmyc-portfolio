@@ -2,12 +2,12 @@
 
 import { useId, useRef, useState } from "react";
 import { site } from "@/lib/content";
+import ContactForm from "./ContactForm";
 
 /*
-  "Ask about ..." button. A plain mailto: link does nothing on computers
-  without a mail app set up, so this opens a small dialog instead:
-  write in Gmail or Outlook on the web, use the device's mail app,
-  or copy the address. No data is sent anywhere by this site.
+  "Ask about ..." button. Opens a dialog with the contact form (topic
+  pre-filled), plus Gmail / Outlook / mail-app links and a copy button
+  for people who prefer their own email.
 */
 export default function EnquiryButton({ subject, children, className = "" }) {
   const dialogRef = useRef(null);
@@ -19,17 +19,17 @@ export default function EnquiryButton({ subject, children, className = "" }) {
   const enc = encodeURIComponent;
   const options = [
     {
-      label: "Write in Gmail",
+      label: "Gmail",
       href: `https://mail.google.com/mail/?view=cm&fs=1&to=${enc(to)}&su=${enc(subject)}&body=${enc(body)}`,
       external: true,
     },
     {
-      label: "Write in Outlook",
+      label: "Outlook",
       href: `https://outlook.live.com/mail/0/deeplink/compose?to=${enc(to)}&subject=${enc(subject)}&body=${enc(body)}`,
       external: true,
     },
     {
-      label: "Use my email app",
+      label: "Email app",
       href: `mailto:${to}?subject=${enc(subject)}&body=${enc(body)}`,
     },
   ];
@@ -54,7 +54,7 @@ export default function EnquiryButton({ subject, children, className = "" }) {
         ref={dialogRef}
         aria-labelledby={titleId}
         onClick={(e) => e.target === dialogRef.current && dialogRef.current.close()}
-        className="m-auto w-[min(26rem,calc(100vw-2rem))] rounded-3xl border border-line bg-surface p-0 text-ink-200 shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm"
+        className="m-auto max-h-[calc(100dvh-2rem)] w-[min(30rem,calc(100vw-2rem))] overflow-y-auto rounded-3xl border border-line bg-surface p-0 text-ink-200 shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm"
       >
         <div className="p-7">
           <div className="flex items-start justify-between gap-4">
@@ -80,14 +80,18 @@ export default function EnquiryButton({ subject, children, className = "" }) {
             Tell me a little about what you need, and I&apos;ll get back to you.
           </p>
 
-          <ul className="mt-6 space-y-2">
+          <div className="mt-6">
+            <ContactForm topic={subject} compact />
+          </div>
+
+          <p className="mt-8 border-t border-line pt-6 text-sm text-ink-300">Or use your own email:</p>
+          <ul className="mt-3 flex flex-wrap gap-2">
             {options.map((o) => (
               <li key={o.label}>
                 <a
                   href={o.href}
                   {...(o.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                  onClick={() => dialogRef.current?.close()}
-                  className="flex items-center justify-between rounded-2xl border border-line px-4 py-3 text-ink-100 transition-colors hover:border-ink-300 hover:bg-surface-2"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-line px-3.5 py-1.5 text-sm text-ink-100 transition-colors hover:border-ink-300 hover:bg-surface-2"
                 >
                   {o.label}
                   <span aria-hidden="true" className="text-ink-400">{o.external ? "↗" : "→"}</span>
@@ -96,7 +100,7 @@ export default function EnquiryButton({ subject, children, className = "" }) {
             ))}
           </ul>
 
-          <div className="mt-5 flex items-center justify-between gap-3 rounded-2xl bg-surface-2 px-4 py-3">
+          <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-surface-2 px-4 py-3">
             <span className="truncate font-mono text-sm text-ink-200">{to}</span>
             <button
               type="button"

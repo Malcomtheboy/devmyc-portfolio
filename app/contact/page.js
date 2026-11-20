@@ -1,4 +1,5 @@
 import Container from "@/components/Container";
+import ContactForm from "@/components/ContactForm";
 import EnquiryButton from "@/components/EnquiryButton";
 import { PageHeader } from "@/components/ui";
 import { site } from "@/lib/content";
@@ -9,9 +10,8 @@ export const metadata = {
 };
 
 /*
-  No contact form on purpose: a form needs a server or third-party service
-  to receive messages. The email row opens a dialog with Gmail, Outlook,
-  mail-app and copy options, so it works on any computer.
+  Contact form at the top (sent via /api/contact), then direct channels.
+  The email row opens the same dialog as the "Ask about" buttons.
 */
 const rowClass = "group grid w-full cursor-pointer gap-2 py-8 text-left sm:grid-cols-[12rem_1fr_auto] sm:items-baseline sm:gap-16";
 
@@ -42,6 +42,14 @@ export default function ContactPage() {
         title="Open to graduate roles and internships."
         intro="Based in Oslo and open to opportunities in Norway and abroad, including London. Email is the quickest way to reach me."
       />
+      <Container className="pb-16">
+        <section aria-labelledby="form-title" className="grid gap-8 border-t border-line pt-12 md:grid-cols-[12rem_1fr] md:gap-16">
+          <h2 id="form-title" className="font-mono text-xs uppercase tracking-[0.18em] text-ink-300">Send a message</h2>
+          <div className="max-w-2xl">
+            <ContactForm />
+          </div>
+        </section>
+      </Container>
       <Container className="pb-24 sm:pb-32">
         <ul className="divide-y divide-line border-y border-line">
           <li>
