@@ -11,8 +11,8 @@ export async function generateMetadata() {
   return pageMeta(lang, "/services", t.metaTitle, t.metaDescription);
 }
 
-// Projects with a screenshot, shown as "Apps I've built"
-const APP_SLUGS = ["listly", "noragentic", "barbershop"];
+// Every project with an image, shown as "Apps I've built" (in this order)
+const APP_SLUGS = ["rihla", "listly", "noragentic", "trace", "barbershop", "go123movies"];
 
 function SectionHead({ id, label, title, intro }) {
   return (
@@ -138,7 +138,12 @@ export default async function ServicesPage() {
               return (
                 <li key={p.slug}>
                   <Link href={href(`/projects/${p.slug}`)} className="group block">
-                    <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-line bg-surface">
+                    <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-line bg-surface">
+                      {img.note && (
+                        <span className="absolute top-3 left-3 z-10 rounded-full border border-line bg-canvas/85 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-300 backdrop-blur">
+                          {c.ui.imageBadges[img.note]}
+                        </span>
+                      )}
                       <Image
                         src={img.src}
                         alt={img.alt}

@@ -43,25 +43,37 @@ function Block({ title, children }) {
   );
 }
 
-// Phone screenshots sit three in a row; desktop screenshots get full width
-function Screens({ images }) {
+// Phone screenshots sit three in a row; desktop screenshots get full width.
+// Images that aren't plain screenshots (mockup, demo data, concept,
+// illustration) get an honest caption underneath.
+function Note({ img, notes }) {
+  return img.note ? <figcaption className="mt-2 text-sm text-ink-400">{notes[img.note]}</figcaption> : null;
+}
+
+function Screens({ images, notes }) {
   const phone = images.filter((i) => i.height > i.width);
   const desktop = images.filter((i) => i.height <= i.width);
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {desktop.map((img) => (
-        <div key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
-          <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 768px) 42rem, 100vw" className="h-auto w-full" />
-        </div>
+        <figure key={img.src}>
+          <div className="overflow-hidden rounded-2xl border border-line bg-surface">
+            <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 768px) 42rem, 100vw" className="h-auto w-full" />
+          </div>
+          <Note img={img} notes={notes} />
+        </figure>
       ))}
       {phone.length > 0 && (
-        <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {phone.map((img) => (
-            <li key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
-              <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 640px) 14rem, 45vw" className="h-auto w-full" />
-            </li>
-          ))}
-        </ul>
+        <figure>
+          <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+            {phone.map((img) => (
+              <li key={img.src} className="overflow-hidden rounded-2xl border border-line bg-surface">
+                <Image src={img.src} alt={img.alt} width={img.width} height={img.height} sizes="(min-width: 640px) 14rem, 45vw" className="h-auto w-full" />
+              </li>
+            ))}
+          </ul>
+          <Note img={phone[0]} notes={notes} />
+        </figure>
       )}
     </div>
   );
@@ -120,7 +132,7 @@ async function ProjectContent({ params }) {
         {p.overview && <Block title={t.overview}><p>{p.overview}</p></Block>}
         {p.problem && <Block title={t.problem}><p>{p.problem}</p></Block>}
         {p.solution && <Block title={p.concept ? t.idea : t.solution}><p>{p.solution}</p></Block>}
-        {p.images?.length > 0 && <Block title={t.screens}><Screens images={p.images} /></Block>}
+        {p.images?.length > 0 && <Block title={t.screens}><Screens images={p.images} notes={c.ui.imageNotes} /></Block>}
         {p.features?.length > 0 && <Block title={t.features}><List items={p.features} /></Block>}
         {p.points?.length > 0 && <Block title={p.concept ? t.planned : t.myPart}><List items={p.points} /></Block>}
         {p.security?.length > 0 && <Block title={t.security}><List items={p.security} /></Block>}
